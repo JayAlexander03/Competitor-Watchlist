@@ -19,6 +19,6 @@ It should be at most 3 of the latest releases being displayed.
 
  The third function is the notification tab. The user will be notified when there is a new release. The user can set up notifications to receive email alerts when there is a new release for a certain project. The app could use my Outlook email to send the new releases from the watchlist. An email list will be inputted by the user.
 
-For now, plan the architecture, components, routes, data flow, and implementation steps. We will be using the AI SDK with OpenRouter for interference.
+For now, plan the architecture, components, routes, data flow, and implementation steps. We will be using the AI SDK with OpenRouter for interference. Let us make the application without too much external dependencies.
 
 
