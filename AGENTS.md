@@ -17,7 +17,7 @@
   - Identify changes from the plan that can be implemented in parallel, and use sub-agents to implement the features efficiently.
   - When using sub-agents to implement features, act as coordinator only.
   - After completing features (large or small), always run commands like lint, type check and next build to check code quality.
-  
+
   ## Testing
 
   - Use any testing tools and libraries available to the project for testing your changes.
@@ -28,3 +28,13 @@
 
   - Always follow the UI design system when creating or revising components or pages.
   - Design system: @DESIGN.md
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
