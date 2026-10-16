@@ -7,11 +7,15 @@ interface WatchItem {
   id: string;
   company: string;
   project: string;
-  pressUrl?: string;
+  pressUrl?: string | null;
   pressConfig?: { newsUrl?: string; url?: string };
   createdAt?: string;
   lastCheckedAt?: string | null;
   releases?: ReleaseItem[];
+}
+
+function effectivePressUrl(item: WatchItem): string | null {
+  return item.pressUrl ?? null;
 }
 
 function extractItems(json: unknown): WatchItem[] {
@@ -36,6 +40,10 @@ export default function WatchlistTab() {
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [summary, setSummary] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editUrl, setEditUrl] = useState('');
+  const [savingId, setSavingId] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -115,6 +123,68 @@ export default function WatchlistTab() {
     }
   }
 
+  async function handleSaveUrl(id: string) {
+    setSavingId(id);
+    setSaveError(null);
+    try {
+      const trimmed = editUrl.trim();
+      const res = await fetch('/api/watchlist', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, pressUrl: trimmed ? trimmed : null }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(
+          (json as { error?: string }).error ??
+            `Save failed (${res.status}).`,
+        );
+      }
+      const updated = (json as { item?: WatchItem }).item;
+      const nextUrl = updated ? effectivePressUrl(updated) : trimmed || null;
+      setItems((prev) =>
+        (prev ?? []).map((it) =>
+          it.id === id ? { ...it, pressUrl: nextUrl } : it,
+        ),
+      );
+      setEditingId(null);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Save failed.');
+    } finally {
+      setSavingId(null);
+    }
+  }
+
+  async function handleClearUrl(id: string) {
+    setSavingId(id);
+    setSaveError(null);
+    try {
+      const res = await fetch('/api/watchlist', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, pressUrl: null }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(
+          (json as { error?: string }).error ??
+            `Clear failed (${res.status}).`,
+        );
+      }
+      setItems((prev) =>
+        (prev ?? []).map((it) =>
+          it.id === id ? { ...it, pressUrl: null } : it,
+        ),
+      );
+      setEditingId(null);
+      setEditUrl('');
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Clear failed.');
+    } finally {
+      setSavingId(null);
+    }
+  }
+
   if (loading) {
     return <p className="text-sm text-[#707070]">Loading watchlist…</p>;
   }
@@ -178,6 +248,86 @@ export default function WatchlistTab() {
                   {removingId === item.id ? 'Removing…' : 'Remove'}
                 </button>
               </div>
+
+              {(() => {
+                const url = effectivePressUrl(item);
+                const isEditing = editingId === item.id;
+                return (
+                  <div className="mt-3">
+                    {url ? (
+                      <p className="text-sm text-[#171717]">
+                        News source:{' '}
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                        >
+                          {url}
+                        </a>
+                      </p>
+                    ) : (
+                      <p className="text-sm text-[#707070]">
+                        (no company URL — news+SEDAR only)
+                      </p>
+                    )}
+                    {!isEditing ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingId(item.id);
+                          setEditUrl(url ?? '');
+                          setSaveError(null);
+                        }}
+                        className="mt-1 text-sm font-medium text-[#171717] underline hover:text-[#24b47e]"
+                      >
+                        Edit URL
+                      </button>
+                    ) : (
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        <input
+                          value={editUrl}
+                          onChange={(e) => setEditUrl(e.target.value)}
+                          placeholder="https://…/news-releases"
+                          inputMode="url"
+                          className="w-full max-w-md rounded-md border border-[#dfdfdf] bg-white px-3 py-2 text-sm text-[#171717] placeholder:text-[#b2b2b2] focus:border-[#3ecf8e] focus:outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleSaveUrl(item.id)}
+                          disabled={savingId === item.id}
+                          className="rounded-md bg-[#3ecf8e] px-3 py-1.5 text-sm font-medium text-[#171717] disabled:opacity-50"
+                        >
+                          {savingId === item.id ? 'Saving…' : 'Save'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleClearUrl(item.id)}
+                          disabled={savingId === item.id}
+                          className="rounded-md border border-[#c7c7c7] bg-white px-3 py-1.5 text-sm font-medium text-[#171717] disabled:opacity-50"
+                        >
+                          Clear
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingId(null);
+                            setSaveError(null);
+                          }}
+                          className="text-sm font-medium text-[#707070] underline"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+                    {isEditing && saveError && (
+                      <p role="alert" className="mt-1 text-sm text-[#e2005a]">
+                        {saveError}
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
 
               <div className="mt-4">
                 <ReleaseTable releases={item.releases ?? []} />

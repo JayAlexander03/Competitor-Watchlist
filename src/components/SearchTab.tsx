@@ -23,12 +23,20 @@ export default function SearchTab() {
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [releases, setReleases] = useState<ReleaseItem[] | null>(null);
+  const [resolvedUrl, setResolvedUrl] = useState<string | null>(null);
+  const [urlConfidence, setUrlConfidence] = useState<string | null>(null);
+  const [urlSource, setUrlSource] = useState<string | null>(null);
+  const [needsUrlHint, setNeedsUrlHint] = useState(false);
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setStatus(null);
     setReleases(null);
+    setResolvedUrl(null);
+    setUrlConfidence(null);
+    setUrlSource(null);
+    setNeedsUrlHint(false);
     if (!company.trim() || !project.trim()) {
       setError('Company and project are required.');
       return;
@@ -52,6 +60,18 @@ export default function SearchTab() {
         );
       }
       setReleases(extractReleases(json).slice(0, 3));
+      const o = json as Record<string, unknown>;
+      const rUrl = typeof o.resolvedUrl === 'string' ? o.resolvedUrl : null;
+      const rConf = typeof o.urlConfidence === 'string' ? o.urlConfidence : null;
+      const rSrc = typeof o.urlSource === 'string' ? o.urlSource : null;
+      const rHint = o.needsUrlHint === true;
+      setResolvedUrl(rUrl);
+      setUrlConfidence(rConf);
+      setUrlSource(rSrc);
+      setNeedsUrlHint(rHint);
+      if (rUrl && !pressUrl.trim()) {
+        setPressUrl(rUrl);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Search failed.');
     } finally {
@@ -158,6 +178,59 @@ export default function SearchTab() {
 
       {loading && (
         <p className="text-sm text-[#707070]">Searching company + news feeds…</p>
+      )}
+
+      {releases !== null && !loading && resolvedUrl && !needsUrlHint && urlSource !== 'user' && (
+        <div className="rounded-md border border-[#dfdfdf] bg-[#fafafa] px-3 py-2 text-sm text-[#171717]">
+          <p>
+            Found news page:{' '}
+            <a
+              href={resolvedUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
+              {resolvedUrl}
+            </a>{' '}
+            (via {urlSource ?? 'discovery'}, {urlConfidence ?? 'medium'} confidence)
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setPressUrl(resolvedUrl)}
+              className="rounded-md border border-[#c7c7c7] bg-white px-3 py-1.5 text-sm font-medium text-[#171717]"
+            >
+              Use this
+            </button>
+            <span className="text-sm text-[#707070]">
+              Add will persist it for daily checks.
+            </span>
+          </div>
+        </div>
+      )}
+
+      {releases !== null && !loading && resolvedUrl && !needsUrlHint && urlSource === 'user' && (
+        <p className="text-sm text-[#707070]">
+          Using your URL:{' '}
+          <a
+            href={resolvedUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            {resolvedUrl}
+          </a>
+        </p>
+      )}
+
+      {releases !== null && !loading && needsUrlHint && (
+        <div className="rounded-md border border-[#dfdfdf] bg-[#fafafa] px-3 py-2 text-sm text-[#171717]">
+          <p>
+            Couldn&apos;t confidently find {company.trim()}&apos;s news page.
+            Paste the News/Investors URL for daily checks — or Add anyway
+            (company-source checks will be skipped).
+          </p>
+        </div>
       )}
 
       {releases !== null && !loading && (

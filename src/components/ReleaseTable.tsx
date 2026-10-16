@@ -1,3 +1,5 @@
+import { formatReleaseDate } from "@/lib/checker";
+
 export interface ReleaseItem {
   source: string;
   title: string;
@@ -43,8 +45,8 @@ export default function ReleaseTable({
                   {r.source}
                 </span>
               </td>
-              <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-[#707070]">
-                {r.date}
+              <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-[#707070]" title={(r.date ?? "").trim() ? undefined : "date unknown"}>
+                {formatReleaseDate(r.date)}
               </td>
               <td className="px-4 py-3 font-medium text-[#171717]">{r.title}</td>
               <td className="px-4 py-3 text-right">
@@ -70,7 +72,7 @@ export default function ReleaseTable({
               <span className="inline-block rounded-full bg-[#fafafa] px-2 py-0.5 text-xs text-[#171717] ring-1 ring-[#ededed]">
                 {r.source}
               </span>
-              <span className="font-mono text-xs text-[#707070]">{r.date}</span>
+              <span className="font-mono text-xs text-[#707070]" title={(r.date ?? "").trim() ? undefined : "date unknown"}>{formatReleaseDate(r.date)}</span>
             </div>
             <p className="text-sm font-medium text-[#171717]">{r.title}</p>
             <a

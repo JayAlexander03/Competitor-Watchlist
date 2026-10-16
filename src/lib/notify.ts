@@ -1,3 +1,4 @@
+import { formatReleaseDate } from "./checker";
 import type { Release } from "./types";
 
 export interface DigestGroup {
@@ -60,7 +61,7 @@ export function buildDigestHtml(
               .map(
                 (r) =>
                   `<li style="margin:6px 0;">` +
-                  `<span style="color:#666;font-size:12px;">${escapeHtml(r.date)} · ${escapeHtml(r.source)}</span><br/>` +
+                  `<span style="color:#666;font-size:12px;">${escapeHtml(formatReleaseDate(r.date))} · ${escapeHtml(r.source)}</span><br/>` +
                   `<a href="${escapeHtml(r.url)}" style="color:#0b6e4f;">${escapeHtml(r.title)}</a>` +
                   `</li>`,
               )

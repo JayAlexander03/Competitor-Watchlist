@@ -6,7 +6,7 @@ export interface Release {
   source: ReleaseSource;
   title: string;
   url: string;
-  /** Display date, DD-MMM-YYYY (e.g. 09-Oct-2026). */
+  /** Display date, DD-MMM-YYYY (e.g. 09-Oct-2026). `""` = unverified/unknown. */
   date: string;
   /** sha256(title|url|date). */
   hash: string;

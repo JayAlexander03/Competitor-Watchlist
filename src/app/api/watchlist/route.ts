@@ -14,6 +14,14 @@ function normalize(value: string): string {
   return value.trim().toLowerCase();
 }
 
+const UpdatePressUrlBody = z.object({
+  id: z.string().min(1),
+  pressUrl: z
+    .union([z.string().trim().url().max(2000), z.literal(""), z.null()])
+    .optional()
+    .nullable(),
+});
+
 export async function GET() {
   await connection();
   try {
@@ -92,6 +100,49 @@ export async function DELETE(req: Request) {
     console.error("DELETE /api/watchlist failed", err);
     return Response.json(
       { error: "Failed to remove watch item" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(req: Request) {
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const parsed = UpdatePressUrlBody.safeParse(body);
+  if (!parsed.success) {
+    return Response.json(
+      { error: "Invalid request", issues: parsed.error.issues },
+      { status: 400 },
+    );
+  }
+
+  const { id, pressUrl } = parsed.data;
+  if (pressUrl === undefined) {
+    return Response.json(
+      { error: "Invalid request", issues: "pressUrl is required" },
+      { status: 400 },
+    );
+  }
+
+  const normalized = pressUrl ? pressUrl : null;
+  try {
+    const item = await store.updatePressUrl(id, normalized);
+    if (!item) {
+      return Response.json(
+        { error: "Watch item not found" },
+        { status: 404 },
+      );
+    }
+    return Response.json({ item });
+  } catch (err) {
+    console.error("PATCH /api/watchlist failed", err);
+    return Response.json(
+      { error: "Failed to update watch item" },
       { status: 500 },
     );
   }

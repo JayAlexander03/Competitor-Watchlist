@@ -4,6 +4,7 @@ import { fetchCompanyReleases } from "./sources/company";
 import { fetchNewsReleases } from "./sources/news";
 import { buildSedarLinks } from "./sources/sedar";
 import { filterRelevant } from "./relevance";
+import { collapseReleases } from "@/lib/collapse";
 
 // NOTE: This module runs in Route Handlers (always live fetch). It must NOT
 // use `use cache` (cacheComponents is on).
@@ -99,8 +100,9 @@ const MONTH_IDX: Record<string, number> = {
   dec: 11,
 };
 
-/** Sort key for a DD-MMM-YYYY date (falls back to firstSeenAt). */
+/** Sort key for a DD-MMM-YYYY date (falls back to firstSeenAt). Empty date sorts last. */
 function dateScore(r: Release): number {
+  if (!(r.date ?? "").trim()) return 0;
   const m = /^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/.exec((r.date ?? "").trim());
   if (m) {
     const mi = MONTH_IDX[m[2].toLowerCase()];
@@ -108,6 +110,51 @@ function dateScore(r: Release): number {
   }
   const t = Date.parse(r.firstSeenAt ?? "");
   return Number.isNaN(t) ? 0 : t;
+}
+
+/** Display a release date, or "—" when unverified/unknown. Never throws. */
+export function formatReleaseDate(date: string): string {
+  const trimmed = (date ?? "").trim();
+  return trimmed || "—";
+}
+
+/**
+ * Remap fresh pipeline releases onto stored identity by normalized URL
+ * (non-empty urls only, first-wins). A fresh release whose normalized URL
+ * matches a stored release keeps the stored id + firstSeenAt (hash is
+ * recomputed from the fresh title/url/date); otherwise returned unchanged.
+ * Pure — never throws.
+ */
+export function remapFreshToStored(
+  fresh: Release[],
+  stored: Release[],
+): Release[] {
+  try {
+    const byUrl = new Map<string, Release>();
+    for (const s of stored ?? []) {
+      const rawUrl = (s?.url ?? "").trim();
+      if (!rawUrl) continue;
+      const key = normalizeUrl(rawUrl);
+      if (!byUrl.has(key)) byUrl.set(key, s);
+    }
+    return (fresh ?? []).map((f) => {
+      const rawUrl = (f?.url ?? "").trim();
+      if (!rawUrl) return f;
+      const hit = byUrl.get(normalizeUrl(rawUrl));
+      if (!hit) return f;
+      let hash = f.hash;
+      try {
+        hash = createHash("sha256")
+          .update(`${f.title}|${f.url}|${f.date}`)
+          .digest("hex");
+      } catch {
+        hash = f.hash;
+      }
+      return { ...f, id: hit.id, firstSeenAt: hit.firstSeenAt, hash };
+    });
+  } catch {
+    return fresh ?? [];
+  }
 }
 
 export interface CheckProjectInput {
@@ -162,7 +209,13 @@ export async function checkProjectReleases(
     }
 
     const relevant = await filterRelevant(merged, item.company, item.project);
-    return relevant
+    let collapsed: Release[];
+    try {
+      collapsed = await collapseReleases(relevant);
+    } catch {
+      collapsed = relevant;
+    }
+    return collapsed
       .sort((a, b) => dateScore(b) - dateScore(a))
       .slice(0, safeLimit);
   } catch {

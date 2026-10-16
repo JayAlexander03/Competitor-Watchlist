@@ -17,6 +17,7 @@ export interface WatchlistStore {
     pressUrl?: string | null,
   ): Promise<WatchItem>;
   removeWatchItem(id: string): Promise<boolean>;
+  updatePressUrl(id: string, pressUrl: string | null): Promise<WatchItem | null>;
   saveReleases(id: string, releases: Release[]): Promise<WatchItem | null>;
   touchChecked(id: string): Promise<WatchItem | null>;
   getNotifications(): Promise<NotificationsState>;
@@ -154,6 +155,20 @@ class FileWatchlistStore implements WatchlistStore {
       const item = items.find((i) => i.id === id);
       if (!item) return null;
       item.releases = releases;
+      await writeJsonAtomic(WATCHLIST_FILE, items);
+      return item;
+    });
+  }
+
+  updatePressUrl(
+    id: string,
+    pressUrl: string | null,
+  ): Promise<WatchItem | null> {
+    return withLock(async () => {
+      const items = await readWatchItems();
+      const item = items.find((i) => i.id === id);
+      if (!item) return null;
+      item.pressUrl = pressUrl ?? null;
       await writeJsonAtomic(WATCHLIST_FILE, items);
       return item;
     });

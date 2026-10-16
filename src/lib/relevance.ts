@@ -1,14 +1,17 @@
 import { createHash } from "node:crypto";
-import { generateObject } from "ai";
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { z } from "zod";
+import { generateObjectWithFallback } from "./models";
 import type { Release } from "./types";
+import {
+  extractArticleHead,
+  fetchTextWithTimeout,
+  peekArticleHtml,
+} from "./sources/company";
 
 // NOTE: This module runs in Route Handlers (always live AI call). It must NOT
 // use `use cache` (cacheComponents is on). Verdicts are cached only in an
 // in-process Map keyed by sha256(url|title).
 
-const MODEL_ID = "meta-llama/llama-3.3-70b-instruct:free";
 const BATCH_SIZE = 20;
 
 const VerdictSchema = z.object({
@@ -24,9 +27,41 @@ const BatchSchema = z.object({
 /** In-memory AI verdict cache: sha256(url|title) -> relevant. */
 const verdictCache = new Map<string, boolean>();
 
+/** In-memory Stage-2 body verdict cache: sha256(url|title|sha256(head)) -> relevant. */
+const bodyVerdictCache = new Map<string, boolean>();
+
 function cacheKey(url: string, title: string): string {
   return createHash("sha256").update(`${url}|${title}`).digest("hex");
 }
+
+function bodyCacheKey(url: string, title: string, head: string): string {
+  const headHash = createHash("sha256").update(head).digest("hex");
+  return createHash("sha256").update(`${url}|${title}|${headHash}`).digest("hex");
+}
+
+const COMPANY_TOKEN_STOPWORDS = new Set([
+  "corp",
+  "inc",
+  "ltd",
+  "limited",
+  "resources",
+  "mining",
+  "exploration",
+  "metals",
+  "gold",
+  "silver",
+  "copper",
+]);
+
+/** Significant company tokens: lower split on [^a-z0-9]+, len>=3, minus stopwords. */
+function companyTokens(company: string): string[] {
+  return (company ?? "")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((t) => t.length >= 3 && !COMPANY_TOKEN_STOPWORDS.has(t));
+}
+
+const STUB_RE = /subscribe|sign in to continue|log in to|paywall/i;
 
 /**
  * Cheap keyword prefilter: does the title/snippet mention the project?
@@ -72,8 +107,7 @@ export async function filterRelevant(
     if (!apiKey || prefiltered.length === 0) return prefiltered;
 
     const batchSize = Math.min(Math.max(opts?.batchSize ?? BATCH_SIZE, 1), 50);
-    const modelId = opts?.model ?? MODEL_ID;
-    const openrouter = createOpenRouter({ apiKey });
+    const modelOverride = opts?.model ? { model: opts.model } : undefined;
     const kept: Release[] = [];
 
     for (let i = 0; i < prefiltered.length; i += batchSize) {
@@ -86,11 +120,9 @@ export async function filterRelevant(
           const numbered = uncached
             .map((r, idx) => `${idx + 1}. "${r.title}" (${r.url})`)
             .join("\n");
-          const { object } = await generateObject({
-            model: openrouter(modelId),
-            schema: BatchSchema,
-            prompt:
-              `You are filtering mining-news headlines for an investor watchlist.\n` +
+          const { object } = await generateObjectWithFallback(
+            BatchSchema,
+            `You are filtering mining-news headlines for an investor watchlist.\n` +
               `Company: ${company}\n` +
               `Project (mine/deposit/property): ${project}\n\n` +
               `For each headline below, decide whether it is relevant to the ${project} project ` +
@@ -98,7 +130,8 @@ export async function filterRelevant(
               `the project, or company news materially affecting it). ` +
               `Return a "results" array with exactly ${uncached.length} entries in the same order, ` +
               `each {relevant, reason, projectMentioned}.\n\nHeadlines:\n${numbered}`,
-          });
+            modelOverride,
+          );
           if (object?.results?.length === uncached.length) {
             object.results.forEach((v, idx) => {
               verdictCache.set(
@@ -117,6 +150,107 @@ export async function filterRelevant(
       for (const r of batch) {
         if (verdictCache.get(cacheKey(r.url, r.title)) !== false) kept.push(r);
       }
+    }
+
+    // Stage 2: body rescue for company-source title-misses. Never throws —
+    // on AI failure the keyword+company-token matched rescues are kept
+    // (mirrors Stage-1 fallback which keeps prefilter verdicts).
+    try {
+      const preSet = new Set(prefiltered);
+      const candidates = items
+        .filter((r) => !preSet.has(r) && r.source === "company")
+        .filter((r) => {
+          const u = (r.url ?? "").toLowerCase();
+          if (u.includes("news.google.com")) return false;
+          if (u.includes("sedarplus")) return false;
+          return true;
+        })
+        .slice(0, 5);
+      if (candidates.length > 0) {
+        const settled = await Promise.allSettled(
+          candidates.map(async (r) => {
+            const html =
+              (await peekArticleHtml(r.url)) ??
+              (await fetchTextWithTimeout(r.url, 5000));
+            if (!html) return null;
+            const head = extractArticleHead(html, 2000) ?? "";
+            return { release: r, head: head.trim() };
+          }),
+        );
+        const tokens = companyTokens(company);
+        const matched: Array<{ release: Release; head: string }> = [];
+        settled.forEach((s) => {
+          try {
+            if (s.status !== "fulfilled" || !s.value) return;
+            const { release, head } = s.value;
+            if (head.length < 300) return;
+            if (STUB_RE.test(head)) return;
+            if (!prefilterByProject(head, "", project)) return;
+            if (tokens.length === 0) return;
+            const low = head.toLowerCase();
+            if (!tokens.some((t) => low.includes(t))) return;
+            matched.push({ release, head });
+          } catch {
+            return;
+          }
+        });
+        const uncached = matched.filter(
+          (m) => !bodyVerdictCache.has(bodyCacheKey(m.release.url, m.release.title, m.head)),
+        );
+        if (uncached.length > 0) {
+          try {
+            const numbered = uncached
+              .map(
+                (m) =>
+                  `"${m.release.title}" (${m.release.url}) | Body: ${m.head.slice(0, 400)}`,
+              )
+              .join("\n");
+            const { object } = await generateObjectWithFallback(
+              BatchSchema,
+              `You are filtering mining-news articles for an investor watchlist.\n` +
+                `Company: ${company}\n` +
+                `Project (mine/deposit/property): ${project}\n\n` +
+                `Each line below is an article headline plus its article lede (body). ` +
+                `The body is the article lede — ignore sidebar, related-stories, and ` +
+                `passing mentions. Decide whether the article is relevant to the ${project} ` +
+                `project (drilling, assays, resources, studies, permits, acquisitions, ` +
+                `financing tied to the project, or company news materially affecting it). ` +
+                `projectMentioned must be the watched project or a target within it. ` +
+                `Return a "results" array with exactly ${uncached.length} entries in the same order, ` +
+                `each {relevant, reason, projectMentioned}.\n\nArticles:\n${numbered}`,
+              modelOverride,
+            );
+            if (object?.results?.length === uncached.length) {
+              object.results.forEach((v, idx) => {
+                bodyVerdictCache.set(
+                  bodyCacheKey(
+                    uncached[idx].release.url,
+                    uncached[idx].release.title,
+                    uncached[idx].head,
+                  ),
+                  v.relevant === true,
+                );
+              });
+            }
+          } catch {
+            // AI failure → keep keyword+company-token rescues (see below).
+          }
+        }
+        for (const m of matched) {
+          // Keep unless explicitly judged irrelevant (mirrors Stage-1
+          // `!== false` semantics): AI failure / length-mismatch leaves
+          // keyword+company-token rescues kept instead of dropped.
+          if (
+            bodyVerdictCache.get(
+              bodyCacheKey(m.release.url, m.release.title, m.head),
+            ) !== false
+          ) {
+            kept.push(m.release);
+          }
+        }
+      }
+    } catch {
+      // Stage-2 failure → keep Stage-1 verdicts only.
     }
     return kept;
   } catch {

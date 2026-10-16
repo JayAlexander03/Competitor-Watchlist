@@ -1,4 +1,5 @@
-import { checkProjectReleases } from "@/lib/checker";
+import { checkProjectReleases, remapFreshToStored } from "@/lib/checker";
+import { collapseDeterministic } from "@/lib/collapse";
 import { store } from "@/lib/store";
 import type { Release } from "@/lib/types";
 
@@ -56,9 +57,16 @@ export async function runRefreshCheck(): Promise<RefreshSummary> {
       continue;
     }
 
+    fresh = remapFreshToStored(fresh, item.releases);
     const seenIds = new Set(item.releases.map((r) => r.id));
     const unseen = fresh.filter((r) => !seenIds.has(r.id));
-    await store.saveReleases(item.id, [...unseen, ...item.releases]);
+    const freshById = new Map(fresh.map((r) => [r.id, r] as const));
+    let merged = [
+      ...unseen,
+      ...item.releases.map((s) => freshById.get(s.id) ?? s),
+    ];
+    merged = collapseDeterministic(merged);
+    await store.saveReleases(item.id, merged);
     await store.touchChecked(item.id);
 
     for (const release of unseen) {
