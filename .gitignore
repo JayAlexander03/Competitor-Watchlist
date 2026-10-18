@@ -43,3 +43,8 @@ next-env.d.ts
 # watchlist data (JSON file persistence)
 /data/*.json
 !/data/.gitkeep
+
+# gmail oauth / tokens (never commit)
+client_secret*.json
+*-oauth*.json
+data/gmail-tokens.json

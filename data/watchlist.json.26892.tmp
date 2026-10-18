@@ -1,0 +1,204 @@
+[
+  {
+    "id": "2c2988b5-96ae-4e32-9838-e0230ca33501",
+    "company": "Eminent Gold",
+    "project": "Hot Springs",
+    "pressUrl": "https://eminentgoldcorp.com/news-media/",
+    "createdAt": "2026-10-16T03:08:33.258Z",
+    "lastCheckedAt": "2026-10-16T04:57:42.066Z",
+    "releases": [
+      {
+        "id": "1f2763aec9bb8594d7b7164216d8c3041a08a522eeeedec0d126c2055fdeb89b",
+        "source": "company",
+        "title": "Eminent Continues to Hit Gold Mineralization at its Hot Springs Range Project in Nevada",
+        "url": "https://eminentgoldcorp.com/news-media/news-releases/eminent-continues-to-hit-gold-mineralization-at-its-hot-springs-range-project-in-nevada/",
+        "date": "18-Jun-2025",
+        "hash": "0948743f369c6c731f708be5ec411e665556c6657d524ec4d4f25e6095e6c1de",
+        "firstSeenAt": "2026-10-16T04:04:34.370Z"
+      },
+      {
+        "id": "4e7896a218c12cd812216dc7126d1b01754fcc6a55883a6bfadea3f7bf8b65d2",
+        "source": "company",
+        "title": "Eminent Acquires 100% Ownership of Getchell Trend Analogue, Hot Springs Range Project",
+        "url": "https://eminentgoldcorp.com/news-media/news-releases/eminent-acquires-100-ownership-of-getchell-trend-analogue-hot-springs-range-project/",
+        "date": "10-Apr-2025",
+        "hash": "66df7c5615a211d8187a79056099f1bf2d9adf98220a34d1dc8ab4565bf0f118",
+        "firstSeenAt": "2026-10-16T04:04:34.370Z"
+      },
+      {
+        "id": "27076424db313c0187fff620aa29ea903f16c0d8ed58390f2ac4a375af9a26d3",
+        "source": "company",
+        "title": "Eminent Appoints Dr. Justin B. Milliard as VP Exploration",
+        "url": "https://eminentgoldcorp.com/news-media/news-releases/eminent-appoints-dr-justin-b-milliard-as-vp-exploration/",
+        "date": "29-Apr-2026",
+        "hash": "5e30f8ef9eae0ea63c2604af480d8e220a4fba9f854fafcbbb31b83265f3e48f",
+        "firstSeenAt": "2026-10-16T04:04:34.370Z"
+      },
+      {
+        "id": "a7728e2392f28ace3bdf9ce50c8bd11f446006e8a45d9c6aa8a32ecc3558a3c0",
+        "source": "company",
+        "title": "Successful Completion of Warrant Incentive Program",
+        "url": "https://eminentgoldcorp.com/news-media/news-releases/successful-completion-of-warrant-incentive-program/",
+        "date": "26-Mar-2026",
+        "hash": "7716830b61aa95df3309ace8f5a00715b4a2dc2c34f4fcb26b28a864a3ecf42c",
+        "firstSeenAt": "2026-10-16T04:04:34.370Z"
+      },
+      {
+        "id": "24747ed254755df8bd5569f88d2cdaad33b219bc2c71672b32da636ff7d63c9c",
+        "source": "company",
+        "title": "Eminent Signs Drill Contract for 10,000m RC Drill Program at HSRP",
+        "url": "https://eminentgoldcorp.com/news-media/news-releases/eminent-signs-drill-contract-for-10-000m-rc-drill-program-at-hsrp/",
+        "date": "15-Mar-2026",
+        "hash": "fd6870f39bc382812eb5e77b016e1dc5b94e6f2b881395bd0f0d28c94e14070c",
+        "firstSeenAt": "2026-10-16T04:04:34.370Z"
+      },
+      {
+        "id": "15cb0712f6917cece2d095525db428d7bd3be54686a599b725d517127bd98130",
+        "source": "company",
+        "title": "Eminent Provides Drilling Update at Hot Springs Range Project",
+        "url": "https://eminentgoldcorp.com/news-media/news-releases/eminent-provides-drilling-update-at-hot-springs-range-project/",
+        "date": "06-May-2025",
+        "hash": "97d8153af40dcdfe216d15e5365e4a3ab43e8975b2ea31a3a3afeab4e53d83c3",
+        "firstSeenAt": "2026-10-16T04:04:34.370Z"
+      },
+      {
+        "id": "1b7ee3baf0d16ef5e2c600ffd96b63030b402ef915d4023147704ce3866ffc44",
+        "source": "company",
+        "title": "Eminent’s First Drill Hole Hits Significant Gold-Arsenic in Getchell Trend Analogue and Commences Second Hole at Hot Springs Range Project",
+        "url": "https://eminentgoldcorp.com/news-media/news-releases/eminents-first-drill-hole-hits-significant-gold-arsenic-in-getchell-trend-analogue-commences-second-hole-at-hot-springs-range/",
+        "date": "15-Jan-2025",
+        "hash": "603fb0e9d93b11a304a8d9ca2fdfdbbc2c64910b5217424fff6c982d4caaf744",
+        "firstSeenAt": "2026-10-16T04:04:34.370Z"
+      },
+      {
+        "id": "b59525c2e44b2d25b86611211f3b1a726ec380413e800434e5d07be50ed7699e",
+        "source": "company",
+        "title": "Eminent Gold Provides Drilling Update on Hot Springs Range Project",
+        "url": "https://eminentgoldcorp.com/news-media/news-releases/eminent-gold-provides-drilling-update-on-hot-springs-range-project/",
+        "date": "30-Dec-2024",
+        "hash": "3cd01b1a1d78f3d87f799ffbd0d4edea65b1d99f936bd478d32adfe3aca41a65",
+        "firstSeenAt": "2026-10-16T04:04:34.370Z"
+      },
+      {
+        "id": "ad73af34ef2828611aad3eff8b162b2d30525ae9a9745a238b17bfc5eef87d02",
+        "source": "company",
+        "title": "Eminent Gold Hires Drill Contractor for Hot Springs Range Project in Nevada",
+        "url": "https://eminentgoldcorp.com/news-media/news-releases/eminent-gold-hires-drill-contractor-for-hot-springs-range-project-in-nevada/",
+        "date": "06-Nov-2024",
+        "hash": "e7373d99cb922902582657b1c94171bbd0c877438a91ada491d259a24affccfa",
+        "firstSeenAt": "2026-10-16T04:04:34.370Z"
+      },
+      {
+        "id": "9ceb9ab0657ba089c449ce032c4109ed1357cd1d1d2eda9fe3d110f0b5ca6b1f",
+        "source": "company",
+        "title": "Eminent Hits 57.9 m @ 0.3 g/t Au of Oxide Gold on the Otis Fault, Ending in 3.0 m @ 2.1 g/t Au",
+        "url": "https://eminentgoldcorp.com/news-media/news-releases/eminent-hits-57.9-m-0.3-g-t-au-of-oxide-gold-on-the-otis-fault-ending-in-3.0-m-2.1-g-t-au/",
+        "date": "16-Sep-2026",
+        "hash": "19a4fd7b4305c0601eb689df89dd2821ff25279973e003416ed045b4dd580ed4",
+        "firstSeenAt": "2026-10-16T03:08:42.637Z"
+      },
+      {
+        "id": "eddb5647cfdcba58c5e4942742c9a97818f66f34df149b54b0ac89b17f8d0f94",
+        "source": "news",
+        "title": "Nevada Gold Explorer Hits 3.2 g/t Gold at Hot Springs Range - Streetwise Reports",
+        "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxQdWVPalhhSGJwWnZETjlhZS1Yb2VOZHp1dFVBbHFOTGNTNDk4NUZ3Rzh1MWEtNGw3TU82VTNTd3NLa3AwUE5Sd2ltWjhYQXNxNVQ4Ti10RkotXzR5b2l3R2dUbUhaRUFWcEdYWW4zZFdrc0NtblRweDZiaTBjZ1NDMTBCdG96eGs5NHRLM0Z2SzZBOTNfaGJTMlpDTV9McExtZS1KNEZlR1owdXBsVVNydjZlaWdONVBN?oc=5",
+        "date": "09-Sep-2026",
+        "hash": "d7d0d68dee66bb962d270eb69f470679244637728e8c1a15a6eb5ff58bc77d82",
+        "firstSeenAt": "2026-10-16T03:08:42.639Z"
+      },
+      {
+        "id": "30222f231a235adaad8a1a6149ce7224412ed3f9b51957c1c74381aa3f60d3d5",
+        "source": "company",
+        "title": "Eminent Commences 10,000 m Discovery Expansion Drill Program at the Hot Springs Range Project, Nevada",
+        "url": "https://eminentgoldcorp.com/news-media/news-releases/eminent-commences-10-000-m-discovery-expansion-drill-program-at-the-hot-springs-range-project-nevada/",
+        "date": "19-Jul-2026",
+        "hash": "8a327b2fbc4a8871ba5014bacf39d6832485abe8dc39158ef7e8f8585e2cc62e",
+        "firstSeenAt": "2026-10-16T03:08:42.637Z"
+      },
+      {
+        "id": "c76ddf1196c2c43c513c89f9eee4565622fbde2bf43e5f7312f3ab04fec72281",
+        "source": "company",
+        "title": "Eminent Reports Airborne Geophysical Survey Results at Hot Springs Range",
+        "url": "https://eminentgoldcorp.com/news-media/news-releases/eminent-reports-airborne-geophysical-survey-results-at-hot-springs-range/",
+        "date": "29-Jun-2026",
+        "hash": "1d276315e842ed92ad08f91f3f1ba5af489565df54acfbb236bf20a8219427e1",
+        "firstSeenAt": "2026-10-16T03:08:42.637Z"
+      },
+      {
+        "id": "a3b7b803275eeeb695fabfec13a97e7633e82949199b98a90153b910d761e839",
+        "source": "company",
+        "title": "Eminent Announces Mobilization for Drilling at Hot Springs Range Project, Nevada",
+        "url": "https://eminentgoldcorp.com/news-media/news-releases/eminent-announces-mobilization-for-drilling-at-hot-springs-range-project-nevada/",
+        "date": "14-Jun-2026",
+        "hash": "a1274177553d5d2658c66e00f4b1d8996dcf4e032e4586aff968fedc9f745ab2",
+        "firstSeenAt": "2026-10-16T03:08:42.637Z"
+      },
+      {
+        "id": "be66eb2c481e6ac06dabb03bd2eec1829665c648a919369cb37e8d31236e984b",
+        "source": "company",
+        "title": "Eminent Announces Positive Results from Seismic Survey at Hot Springs Range Project, Nevada",
+        "url": "https://eminentgoldcorp.com/news-media/news-releases/eminent-announces-positive-results-from-seismic-survey-at-hot-springs-range-project-nevada/",
+        "date": "25-May-2026",
+        "hash": "9e11b26b150fbfd57485afb2e63f6d63d2ec3bcb1b5bc81081e2b56a4cd436e3",
+        "firstSeenAt": "2026-10-16T03:08:42.637Z"
+      },
+      {
+        "id": "3b0711a912bbde11db5812ddf30266ba50e03ea00a200fbdf54de029682128ce",
+        "source": "news",
+        "title": "CEO.CA's Inside the Boardroom: Eminent Gold Resumes Drilling at its Hot Springs Range Project - The Globe and Mail",
+        "url": "https://news.google.com/rss/articles/CBMihAJBVV95cUxPZXJydXZseEYwbWZ6a3BIZXAzeXVMUllkNlBzTXhpQ0Fjd0ZKTUxBV2hoLUswSVV4TDJTN0RZcXFIVmg3YjQ1YVNCVTItampqOEU5SFRiSVhQVFZaaDJYeTgtNVdCcWZLMkRlZ0hvTFRSRTV4ZnZVeThxUl9WV2Z4cWpmRU1tN1E2VTFVaGlfVUxpbXE1blkySkZHOERIVDJOWWJob25OSzJ6NmszbmR0OXl4Njh6Y2pXY3did2hiVVRjNUVHOUVVWXIyOVgyVDdwNl9RYjRCcmZOdzdQbW9Sc3EyVjRZajJZLTVQWnFSbTk4MXJXSW1qLWxHX0pyaktfajhMQw?oc=5",
+        "date": "10-Oct-2025",
+        "hash": "2afd92cf34eac6072c96d034b7af429bfbe16fbe6d314eee7b068f46255d51f5",
+        "firstSeenAt": "2026-10-16T03:08:42.639Z"
+      },
+      {
+        "id": "bae939d0afbd171007edc2b9dcce28bc30f065e49c82d263361516fc7dc86945",
+        "source": "news",
+        "title": "Eminent defines drill targets analogous to the Getchell Gold Trend at its Hot Springs Range Project - PR Newswire Canada",
+        "url": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxQdDByYmlXa3RxQzNsQUZSOHpaNnpoeF90T2lTYlEyM1hBUDNHNnZCVDBCR0htcVF2U0dHWXdROTdaaExSUEl6ZVNuc25qS1c3ZE5vbWRhZ2VLajlZcXJ0ZDgwS3c5cHhiZDB3MTUtbFk0cUpfRElnblpVTUxvd2hFbmlsUjdHeXdvQ2o0SE1UZUtLV29PNFpsNXZRWGFmbHEzREtOeHJFeFYzVWNCX0F6N3ZRejFmUS1uZ0pPYVFVY1V4aW00ZnRhNVUzUGpvckhZYmxpb1B5ZzlwaGlmbGVHS0FHZ19lMTg?oc=5",
+        "date": "14-Jul-2021",
+        "hash": "c20813d41eeecd2ce0244326dbc3812cdde9fb2cf0b017a857e873270bd9ac59",
+        "firstSeenAt": "2026-10-16T03:08:42.639Z"
+      },
+      {
+        "id": "73234f82b0283412de7d40864d18bac2c9de1a8e201fb6be987f468ca0b3dcc1",
+        "source": "news",
+        "title": "Eminent Gold Confirms the Existence of a Hydrothermal Gold System in the Hot Springs Range Analogous to the Getchell Trend - PR Newswire Canada",
+        "url": "https://news.google.com/rss/articles/CBMihgJBVV95cUxOOUtfdWpsT2phVWNLeHdkN3lxU0hQNHJISXNxM0pYRmprWm93UGdqd1hmRURRR0NrdGV6NTZSUmMzR2lxS09sMTBuWWlVYWFfT0k5cFRtQU5BenJnWnE4ZDJuQ1JuQmdsNXVJb0dBLVdEN2JnSzZCV1J4bXROclBkUENYVUhlT1pvZVhuUHVDRGwzT29UZks2eTVCSm5sUXF4LU5lX2VDem5nYU84emVqZXZsWW1zWkZxbWtnREYyYXhmbkVpTUhVZWhUVWVoeElnN2NfalBsTnl6TjFkNlE4STI3YUVJc3BodS12RGIySHlXWGFoSDFFZ25GSHZWWGRqdDFER1Rn?oc=5",
+        "date": "24-Feb-2021",
+        "hash": "24146813af1230595bbee20e3a83789a114e98095aa1241cfbd377568313f8ab",
+        "firstSeenAt": "2026-10-16T03:08:42.639Z"
+      }
+    ],
+    "historyTruncated": true,
+    "backfillTotal": 118
+  },
+  {
+    "id": "1be7affa-4ae1-4123-85a9-72ab4fee5df7",
+    "company": "Canamera Metals",
+    "project": "Iron Hills",
+    "pressUrl": "http://canamerametals.com/news/",
+    "createdAt": "2026-10-16T03:25:20.666Z",
+    "lastCheckedAt": "2026-10-16T04:57:42.125Z",
+    "releases": [
+      {
+        "id": "4e4d053f0738c4fd9afde85c20165e6de90409625e7576fae286526c4694036e",
+        "source": "news",
+        "title": "Canamera Energy Metals Confirms up to 6,557 ppm TREO from Iron Hills Over-Limit Re-Assay Results - Junior Mining Network",
+        "url": "https://news.google.com/rss/articles/CBMiiAJBVV95cUxNV25tVmk3TXo2aThadHZGbExRb3Z0NWtXVjZoMGNqb01ZMWkwM3VQMm1SOVFzcFhuUUIxLXNybVVMWVVJUTB0eGhpS3gwUFJyaW9rUk1aenZoTndEbWtWQWdtamZJZTVGVVpGQzdEOW0tVnZkeXRnMHNHQ2FLazNoUzQxQTZkNkVYLUFMRmxWUExxVlZUUDZ0eDI4UkFOY3lDSDlyclljV0Z1Rm1SQWFWV09ISXNiUl92ZEp6QmFGRnR2VjJ4aHVfbDhJc0JZWTlpakhkTzZobEd4Z3NuZVY2c2haNkdqUGZzR0xDTktYRjlFOHkyTEc3V0FWVmk5eW1hWW9DbUpnVmY?oc=5",
+        "date": "26-Jan-2026",
+        "hash": "99c4c4ae688f2ce9fde7a5d33d941aa4d9a52a7dd1b3a3c4a42fbe8149ec7eaa",
+        "firstSeenAt": "2026-10-16T03:25:34.714Z"
+      },
+      {
+        "id": "f658eab94106b5ef832233570f892ace215cb410239ea74dcf48b3ee4d15b3cc",
+        "source": "news",
+        "title": "Canamera Energy Metals Reports Multiple Over-Limit REE Results from Iron Hills Project - Junior Mining Network",
+        "url": "https://news.google.com/rss/articles/CBMi-wFBVV95cUxOY0o0TUw2Y3FZeUhnRjQ2YWp3clpJQ1pOX1BHTDdaN1hudFllY0NNTXlwMmRmcllORXBsWmxwWjRXdzh3NFRHLUhaUTZXbkpyNEVxckVPZ21WWklLcmRJZHFXU3VqRlpmaEs5N05QRl9NdnZFYkszWjYwaC1FSl85bHpCNW1QX19iOU9CbkxqVnJtTHhSd2xyRFJENTdnVExMUUI2VWlreGlFeE1xaTZpM090VlNKQmR5djRTQmZGem52Um1sbG1KUUlmT1FpNURZbDhOZE52akF4VmpUbGtzS3pnYWpfMTQ5eU1sczVUUF9pcEVMS2FGWkM0TQ?oc=5",
+        "date": "12-Jan-2026",
+        "hash": "1530a19d56946bd77338d220f2ee4f25d1ed8505891ed566ae42eed5d3dad3f4",
+        "firstSeenAt": "2026-10-16T03:25:34.714Z"
+      }
+    ]
+  }
+]

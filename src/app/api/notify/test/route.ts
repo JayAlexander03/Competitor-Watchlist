@@ -24,6 +24,17 @@ export async function POST(req: Request) {
     );
   }
 
+  const sample: Release = {
+    id: "sample-test-release",
+    source: "company",
+    title: "Sample release — notification test send",
+    url: "https://example.com/news/sample-release",
+    date: "09-Oct-2026",
+    hash: "test",
+    firstSeenAt: new Date().toISOString(),
+  };
+  const html = buildDigestHtml([sample], { title: "Watchlist test digest" });
+
   try {
     const state = await store.getNotifications();
     const to = parsed.data.to ?? state.recipients[0];
@@ -34,16 +45,6 @@ export async function POST(req: Request) {
       );
     }
 
-    const sample: Release = {
-      id: "sample-test-release",
-      source: "company",
-      title: "Sample release — notification test send",
-      url: "https://example.com/news/sample-release",
-      date: "09-Oct-2026",
-      hash: "test",
-      firstSeenAt: new Date().toISOString(),
-    };
-    const html = buildDigestHtml([sample], { title: "Watchlist test digest" });
     const result = await sendDigest({
       to: [to],
       subject: "Watchlist test digest",
@@ -52,6 +53,9 @@ export async function POST(req: Request) {
     return Response.json({ sent: result.sent, preview: result.previewUrl });
   } catch (err) {
     console.error("POST /api/notify/test failed", err);
-    return Response.json({ error: "Test send failed" }, { status: 500 });
+    return Response.json(
+      { error: "Test send failed", preview: html },
+      { status: 500 },
+    );
   }
 }

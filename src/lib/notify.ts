@@ -90,10 +90,11 @@ export interface SendDigestOptions {
 }
 
 /**
- * Send the digest via SMTP (nodemailer). Defaults suit Outlook.com
- * (smtp-mail.outlook.com:587 + app password).
- * If credentials/recipients are missing — or sending fails — returns
- * {sent:false, preview:html, previewUrl:html} without throwing.
+ * Send the digest via the Gmail API (OAuth2 refresh token flow, native fetch).
+ * Requires GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GMAIL_REFRESH_TOKEN,
+ * and GMAIL_SENDER. If recipients are empty, Gmail is unconfigured, or
+ * sending fails — returns {sent:false, preview:html, previewUrl:html}
+ * without throwing.
  */
 export async function sendDigest(
   to: string[],
@@ -112,32 +113,17 @@ export async function sendDigest(
   const fail = (): SendResult => ({ sent: false, preview: body, previewUrl: body });
   try {
     const recipients = (to ?? []).map((t) => t.trim()).filter(Boolean);
-    const host = process.env.SMTP_HOST ?? "smtp-mail.outlook.com";
-    const port = Number(process.env.SMTP_PORT ?? "587");
-    const user =
-      process.env.SMTP_USER ?? process.env.NOTIFY_USER ?? "";
-    const pass =
-      process.env.SMTP_PASS ?? process.env.NOTIFY_PASS ?? "";
-    const from =
-      process.env.NOTIFY_FROM ?? process.env.SMTP_FROM ?? user;
-    if (!user || !pass || !from || recipients.length === 0) {
+    if (recipients.length === 0) {
       return fail();
     }
-    const mod = await import("nodemailer");
-    const transporter = mod.default.createTransport({
-      host,
-      port,
-      secure: port === 465,
-      auth: { user, pass },
-    });
-    await transporter.sendMail({
-      from,
-      to: recipients.join(", "),
-      subject: subj,
-      html: body,
-    });
+    const { isGmailConfigured, sendGmail } = await import("./gmail");
+    if (!isGmailConfigured()) {
+      return fail();
+    }
+    await sendGmail({ to: recipients, subject: subj, html: body });
     return { sent: true };
-  } catch {
+  } catch (err) {
+    console.error("sendDigest via Gmail API failed:", err);
     return fail();
   }
 }

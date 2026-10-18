@@ -32,6 +32,7 @@ export default function NotificationsTab() {
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [lastCheck, setLastCheck] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -99,22 +100,33 @@ export default function NotificationsTab() {
     setTesting(true);
     setError(null);
     setStatus(null);
+    setPreview(null);
     try {
       const recipients = parseList(raw);
       const res = await fetch('/api/notify/test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(
-          recipients.length > 0 ? { email: recipients[0] } : {}
+          recipients.length > 0 ? { to: recipients[0] } : {}
         ),
       });
       const json = await res.json().catch(() => ({}));
+      const outcome = json as {
+        sent?: boolean;
+        preview?: string;
+        error?: string;
+      };
+      if (outcome.preview) setPreview(outcome.preview);
       if (!res.ok) {
-        throw new Error(
-          (json as { error?: string }).error ?? `Test failed (${res.status}).`
+        throw new Error(outcome.error ?? `Test failed (${res.status}).`);
+      }
+      if (outcome.sent) {
+        setStatus('Test email sent. Check the inbox (and spam folder).');
+      } else {
+        setError(
+          'Test email was NOT sent — Gmail API rejected it or is not configured. Check GMAIL_SENDER / GMAIL_REFRESH_TOKEN / GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET in .env and restart the dev server. The digest preview below shows what would have been sent.'
         );
       }
-      setStatus('Test email sent. Check the inbox (and spam folder).');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Test failed.');
     } finally {
@@ -180,6 +192,18 @@ export default function NotificationsTab() {
         <p className="mt-1 font-mono text-xs text-[#707070]">
           Last check: {lastCheck ?? 'unknown'} · {emails.length} recipient(s)
         </p>
+        {preview && (
+          <details className="mt-3 rounded-md border border-[#ededed] bg-[#fafafa] p-3">
+            <summary className="cursor-pointer text-sm font-medium text-[#171717]">
+              Digest preview (what would have been sent)
+            </summary>
+            <iframe
+              title="Digest preview"
+              srcDoc={preview}
+              className="mt-2 h-64 w-full rounded-md border border-[#dfdfdf] bg-white"
+            />
+          </details>
+        )}
         <a
           href={mailto}
           className="mt-3 inline-block text-sm font-medium text-[#171717] underline hover:text-[#24b47e]"
