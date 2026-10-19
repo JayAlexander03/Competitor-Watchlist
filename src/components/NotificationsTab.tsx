@@ -33,6 +33,7 @@ export default function NotificationsTab() {
   const [status, setStatus] = useState<string | null>(null);
   const [lastCheck, setLastCheck] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [testSenderEnabled, setTestSenderEnabled] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -46,6 +47,8 @@ export default function NotificationsTab() {
         if (r1.ok) {
           const j = await r1.json().catch(() => ({}));
           setRaw(extractEmails(j).join('\n'));
+          const ts = (j as { testSender?: { enabled?: boolean } })?.testSender;
+          setTestSenderEnabled(Boolean(ts?.enabled));
         }
         if (r2.ok) {
           const j = await r2.json().catch(() => null);
@@ -124,7 +127,9 @@ export default function NotificationsTab() {
         setStatus('Test email sent. Check the inbox (and spam folder).');
       } else {
         setError(
-          'Test email was NOT sent — Gmail API rejected it or is not configured. Check GMAIL_SENDER / GMAIL_REFRESH_TOKEN / GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET in .env and restart the dev server. The digest preview below shows what would have been sent.'
+          outcome.error
+            ? `Test email was NOT sent — ${outcome.error}`
+            : 'Test email was NOT sent — Resend rejected it or RESEND_API_KEY is not configured. The digest preview below shows what would have been sent.'
         );
       }
     } catch (err) {
@@ -143,13 +148,30 @@ export default function NotificationsTab() {
 
   return (
     <div className="flex flex-col gap-6">
+      {testSenderEnabled && (
+        <div
+          role="note"
+          className="rounded-xl border border-[#dfdfdf] bg-[#fafafa] p-4"
+        >
+          <p className="text-sm font-medium text-[#171717]">
+            Resend test-sender mode
+          </p>
+          <p className="mt-1 text-sm text-[#707070]">
+            Emails currently deliver only to the Resend account owner (RESEND_TO),
+            not to the recipient list below. Verify a sending domain and remove
+            RESEND_TO to enable delivery to every recipient.
+          </p>
+        </div>
+      )}
       <form
         onSubmit={handleSave}
         className="rounded-xl border border-[#dfdfdf] bg-white p-6"
       >
         <h2 className="text-lg font-medium text-[#171717]">Email recipients</h2>
         <p className="mt-1 text-sm text-[#707070]">
-          One email per line, or comma-separated. Daily digests go to this list.
+          {testSenderEnabled
+            ? 'One email per line, or comma-separated. Saved for later — delivery is currently limited to the Resend account owner.'
+            : 'One email per line, or comma-separated. Daily digests go to this list.'}
         </p>
         <textarea
           value={raw}

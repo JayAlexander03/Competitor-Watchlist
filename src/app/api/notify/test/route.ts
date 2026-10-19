@@ -37,20 +37,28 @@ export async function POST(req: Request) {
 
   try {
     const state = await store.getNotifications();
+    const hasOverride = Boolean(process.env.RESEND_TO?.trim());
     const to = parsed.data.to ?? state.recipients[0];
-    if (!to) {
+    if (!to && !hasOverride) {
       return Response.json(
-        { error: "No recipient: provide {to} or save recipients first" },
+        {
+          error:
+            "No recipient: provide {to}, set RESEND_TO, or save recipients first",
+        },
         { status: 400 },
       );
     }
 
     const result = await sendDigest({
-      to: [to],
+      to: to ? [to] : [],
       subject: "Watchlist test digest",
       html,
     });
-    return Response.json({ sent: result.sent, preview: result.previewUrl });
+    return Response.json({
+      sent: result.sent,
+      preview: result.previewUrl,
+      error: result.error,
+    });
   } catch (err) {
     console.error("POST /api/notify/test failed", err);
     return Response.json(

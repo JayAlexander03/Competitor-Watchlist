@@ -14,6 +14,7 @@ export async function GET() {
       recipients: state.recipients,
       lastCheckAt: state.lastCheckAt,
       lastResult: state.lastResult,
+      testSender: { enabled: Boolean(process.env.RESEND_TO?.trim()) },
     });
   } catch (err) {
     console.error("GET /api/notifications/recipients failed", err);

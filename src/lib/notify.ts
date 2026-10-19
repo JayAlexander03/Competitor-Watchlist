@@ -17,6 +17,8 @@ export interface SendResult {
   preview?: string;
   /** Alias of preview (HTML source) for callers that render it directly. */
   previewUrl?: string;
+  /** Reason the send did not happen, when known. */
+  error?: string;
 }
 
 function escapeHtml(s: string): string {
@@ -90,11 +92,13 @@ export interface SendDigestOptions {
 }
 
 /**
- * Send the digest via the Gmail API (OAuth2 refresh token flow, native fetch).
- * Requires GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GMAIL_REFRESH_TOKEN,
- * and GMAIL_SENDER. If recipients are empty, Gmail is unconfigured, or
- * sending fails — returns {sent:false, preview:html, previewUrl:html}
- * without throwing.
+ * Send the digest via the Resend API (native fetch).
+ * Requires RESEND_API_KEY. The sender comes from RESEND_FROM (defaults to
+ * onboarding@resend.dev) and RESEND_TO overrides the saved recipients.
+ * With the default onboarding@resend.dev sender, Resend only delivers to the
+ * account owner, so RESEND_TO is the reliable way to receive test digests.
+ * If recipients are empty, Resend is unconfigured, or sending fails — returns
+ * {sent:false, preview:html, previewUrl:html, error} without throwing.
  */
 export async function sendDigest(
   to: string[],
@@ -110,20 +114,30 @@ export async function sendDigest(
   const to = Array.isArray(toOrOpts) ? toOrOpts : toOrOpts.to;
   const subj = Array.isArray(toOrOpts) ? (subject ?? "") : toOrOpts.subject;
   const body = Array.isArray(toOrOpts) ? (html ?? "") : toOrOpts.html;
-  const fail = (): SendResult => ({ sent: false, preview: body, previewUrl: body });
+  const fail = (reason?: string): SendResult => ({
+    sent: false,
+    preview: body,
+    previewUrl: body,
+    error: reason,
+  });
   try {
-    const recipients = (to ?? []).map((t) => t.trim()).filter(Boolean);
+    // Test-sender mode: with onboarding@resend.dev Resend only delivers to the
+    // account owner, so an explicit RESEND_TO must win over the saved list.
+    const override = process.env.RESEND_TO?.trim();
+    const recipients = override
+      ? [override]
+      : (to ?? []).map((t) => t.trim()).filter(Boolean);
     if (recipients.length === 0) {
-      return fail();
+      return fail("No recipients configured.");
     }
-    const { isGmailConfigured, sendGmail } = await import("./gmail");
-    if (!isGmailConfigured()) {
-      return fail();
+    const { isResendConfigured, sendResend } = await import("./resend");
+    if (!isResendConfigured()) {
+      return fail("RESEND_API_KEY is not configured.");
     }
-    await sendGmail({ to: recipients, subject: subj, html: body });
+    await sendResend({ to: recipients, subject: subj, html: body });
     return { sent: true };
   } catch (err) {
-    console.error("sendDigest via Gmail API failed:", err);
-    return fail();
+    console.error("sendDigest via Resend failed:", err);
+    return fail(err instanceof Error ? err.message : "Resend send failed.");
   }
 }
