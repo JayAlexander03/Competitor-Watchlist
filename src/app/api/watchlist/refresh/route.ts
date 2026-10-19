@@ -1,5 +1,6 @@
 import { checkProjectReleases, remapFreshToStored } from "@/lib/checker";
 import { collapseDeterministic } from "@/lib/collapse";
+import { requireApiAuth } from "@/lib/api-auth";
 import { store } from "@/lib/store";
 import type { Release } from "@/lib/types";
 
@@ -16,10 +17,21 @@ export interface RefreshSummary {
   newItems: RefreshNewItem[];
 }
 
-/** Optional shared-secret gate: enforced only when CRON_SECRET is set. */
+/**
+ * Shared-secret gate for the cron route. Required in production; optional in
+ * development so local cron testing works without extra setup.
+ */
 export function checkCronAuth(req: Request): Response | null {
   const secret = process.env.CRON_SECRET;
-  if (!secret) return null;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      return Response.json(
+        { error: "CRON_SECRET is not configured" },
+        { status: 503 },
+      );
+    }
+    return null;
+  }
   if (req.headers.get("authorization") === `Bearer ${secret}`) return null;
   return Response.json({ error: "Unauthorized" }, { status: 401 });
 }
@@ -96,8 +108,10 @@ export async function runRefreshCheck(): Promise<RefreshSummary> {
   return { checked: items.length, newCount: newItems.length, newItems };
 }
 
-export async function POST(req: Request) {
-  const unauthorized = checkCronAuth(req);
+export async function POST() {
+  // UI-triggered refresh: session cookie only. The cron route applies the
+  // shared-secret check separately.
+  const unauthorized = await requireApiAuth();
   if (unauthorized) return unauthorized;
   try {
     const summary = await runRefreshCheck();

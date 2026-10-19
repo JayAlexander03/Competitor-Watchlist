@@ -1,5 +1,6 @@
 import { connection } from "next/server";
 import { z } from "zod";
+import { requireApiAuth } from "@/lib/api-auth";
 import { store } from "@/lib/store";
 
 const WatchItemBody = z.object({
@@ -23,6 +24,8 @@ const UpdatePressUrlBody = z.object({
 });
 
 export async function GET() {
+  const unauthorized = await requireApiAuth();
+  if (unauthorized) return unauthorized;
   await connection();
   try {
     const items = await store.listWatchItems();
@@ -37,6 +40,8 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  const unauthorized = await requireApiAuth();
+  if (unauthorized) return unauthorized;
   let body: unknown;
   try {
     body = await req.json();
@@ -82,6 +87,8 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  const unauthorized = await requireApiAuth();
+  if (unauthorized) return unauthorized;
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   if (!id) {
@@ -106,6 +113,8 @@ export async function DELETE(req: Request) {
 }
 
 export async function PATCH(req: Request) {
+  const unauthorized = await requireApiAuth();
+  if (unauthorized) return unauthorized;
   let body: unknown;
   try {
     body = await req.json();

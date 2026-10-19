@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import SearchTab from '@/components/SearchTab';
 import WatchlistTab from '@/components/WatchlistTab';
 import NotificationsTab from '@/components/NotificationsTab';
+import LogoutButton from '@/components/LogoutButton';
 
 type Tab = 'search' | 'watchlist' | 'notifications';
 
@@ -41,6 +42,7 @@ async function TabShell({
   const raw = Array.isArray(params.tab) ? params.tab[0] : params.tab;
   const tab: Tab =
     raw === 'watchlist' || raw === 'notifications' ? raw : 'search';
+  const authEnabled = Boolean(process.env.APP_PASSWORD?.trim());
 
   return (
     <div className="min-h-full bg-white font-sans text-[#171717]">
@@ -49,22 +51,25 @@ async function TabShell({
           <h1 className="text-3xl font-medium tracking-tight">
             Competitor Watchlist
           </h1>
-          <nav aria-label="Tabs" className="flex gap-6">
-            {TABS.map((t) => (
-              <a
-                key={t.id}
-                href={t.id === 'search' ? '/' : `/?tab=${t.id}`}
-                aria-current={tab === t.id ? 'page' : undefined}
-                className={
-                  tab === t.id
-                    ? 'border-b-2 border-[#3ecf8e] pb-2 text-sm font-medium text-[#171717]'
-                    : 'border-b-2 border-transparent pb-2 text-sm font-medium text-[#707070] hover:text-[#171717]'
-                }
-              >
-                {t.label}
-              </a>
-            ))}
-          </nav>
+          <div className="flex items-center justify-between gap-4">
+            <nav aria-label="Tabs" className="flex gap-6">
+              {TABS.map((t) => (
+                <a
+                  key={t.id}
+                  href={t.id === 'search' ? '/' : `/?tab=${t.id}`}
+                  aria-current={tab === t.id ? 'page' : undefined}
+                  className={
+                    tab === t.id
+                      ? 'border-b-2 border-[#3ecf8e] pb-2 text-sm font-medium text-[#171717]'
+                      : 'border-b-2 border-transparent pb-2 text-sm font-medium text-[#707070] hover:text-[#171717]'
+                  }
+                >
+                  {t.label}
+                </a>
+              ))}
+            </nav>
+            {authEnabled && <LogoutButton />}
+          </div>
         </div>
       </header>
 

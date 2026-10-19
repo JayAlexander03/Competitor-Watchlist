@@ -1,5 +1,6 @@
 import { connection } from "next/server";
 import { z } from "zod";
+import { requireApiAuth } from "@/lib/api-auth";
 import { store } from "@/lib/store";
 
 const RecipientsBody = z.object({
@@ -7,6 +8,8 @@ const RecipientsBody = z.object({
 });
 
 export async function GET() {
+  const unauthorized = await requireApiAuth();
+  if (unauthorized) return unauthorized;
   await connection();
   try {
     const state = await store.getNotifications();
@@ -26,6 +29,8 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  const unauthorized = await requireApiAuth();
+  if (unauthorized) return unauthorized;
   let body: unknown;
   try {
     body = await req.json();

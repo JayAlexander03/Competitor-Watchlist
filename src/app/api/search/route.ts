@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { requireApiAuth } from "@/lib/api-auth";
 import { checkProjectReleases } from "@/lib/checker";
 import {
   discoverCompanyPressUrl,
@@ -15,6 +16,8 @@ const SearchBody = z.object({
 });
 
 export async function POST(req: Request) {
+  const unauthorized = await requireApiAuth();
+  if (unauthorized) return unauthorized;
   let body: unknown;
   try {
     body = await req.json();

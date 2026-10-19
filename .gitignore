@@ -43,4 +43,5 @@ next-env.d.ts
 
 # watchlist data (JSON file persistence)
 /data/*.json
+/data/*.tmp
 !/data/.gitkeep

@@ -1,0 +1,12 @@
+.git
+.next
+node_modules
+out
+data
+.agents
+.env*
+*.log
+tsconfig.tsbuildinfo
+next-env.d.ts
+README.md
+.github

@@ -1,0 +1,24 @@
+name: Daily watchlist check
+
+# GitHub may delay scheduled workflows (sometimes by many minutes) during
+# periods of high load, and it automatically disables schedules after 60 days
+# of repository inactivity. Re-enable the workflow from the Actions tab if
+# the schedule has been paused.
+on:
+  schedule:
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    if: ${{ vars.DEPLOY_URL != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger cron endpoint
+        run: |
+          curl --fail --silent --show-error --retry 2 \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ vars.DEPLOY_URL }}/api/cron/check"

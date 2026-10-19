@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { requireApiAuth } from "@/lib/api-auth";
 import { buildDigestHtml, sendDigest } from "@/lib/notify";
 import { store } from "@/lib/store";
 import type { Release } from "@/lib/types";
@@ -8,6 +9,8 @@ const TestBody = z.object({
 });
 
 export async function POST(req: Request) {
+  const unauthorized = await requireApiAuth();
+  if (unauthorized) return unauthorized;
   let body: unknown = {};
   try {
     const text = await req.text();

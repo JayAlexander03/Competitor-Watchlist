@@ -1,0 +1,22 @@
+services:
+  app:
+    image: ghcr.io/jayalexander03/nvresources_competitor_watchlist:latest
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - watchlist-data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      # BusyBox wget is available in the Alpine image. /login is public; the
+      # root page redirects, so it is not a good health probe.
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/login"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  watchlist-data:
